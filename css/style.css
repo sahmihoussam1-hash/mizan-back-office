@@ -1,0 +1,237 @@
+/* ===== La page ===== */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #2b2d31;   /* gris foncé */
+    color: #d4d6da;              /* argent */
+    margin: 0;
+    padding: 20px;
+}
+
+/* La boîte au centre du site */
+.container {
+    max-width: 640px;
+    margin: 0 auto;
+}
+#last-update {
+    text-align: center;
+    color: #c4c7cc;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+/* ===== Le haut de la page ===== */
+.site-header {
+    text-align: center;
+    border-bottom: 2px solid #ffc933;   /* ligne jaune */
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+}
+
+h1 {
+    color: #d4d6da;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+}
+
+.subtitle {
+    color: #ffc933;              /* jaune */
+    font-weight: bold;
+}
+
+#datetime-container {
+    color: #9a9da4;              /* gris clair */
+    font-size: 14px;
+}
+
+/* ===== Devise et bouton ===== */
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.currency-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ===== Listes, champs et boutons ===== */
+select, input {
+    background-color: #1f2023;
+    color: #d4d6da;
+    border: 1px solid #4a4d54;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+button {
+    background-color: #ffc933;   /* jaune */
+    color: #222222;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #e0ac12;   /* jaune plus foncé */
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ===== Message de chargement ou d'erreur ===== */
+#status {
+    background-color: #35373c;
+    border-left: 4px solid #ffc933;
+    border-radius: 5px;
+    padding: 12px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* ===== Cartes de prix ===== */
+.price-card {
+    background-color: #35373c;
+    border: 1px solid #4a4d54;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.price-card h2 {
+    color: #9a9da4;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.price-card h3 {
+    font-size: 26px;
+}
+
+/* Hausse : trait vert à gauche */
+.card-up {
+    border-left: 6px solid #4ade80;
+}
+
+/* Baisse : trait rouge à gauche */
+.card-down {
+    border-left: 6px solid #f87171;
+}
+
+.trend-up {
+    color: #4ade80;   /* vert */
+}
+
+.trend-down {
+    color: #f87171;   /* rouge */
+}
+
+.variation-badge {
+    font-weight: bold;
+}
+
+/* ===== Estimateur de bijou ===== */
+.card {
+    background-color: #35373c;
+    border: 1px solid #4a4d54;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.card h3 {
+    color: #ffc933;
+    text-align: center;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+}
+
+.form-group label {
+    color: #9a9da4;
+    margin-bottom: 5px;
+}
+
+.card select,
+.card input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.card p {
+    text-align: center;
+}
+
+#estimate {
+    color: #ffc933;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+/* Message d'erreur sous le champ poids */
+.error {
+    color: #f87171;
+    font-size: 14px;
+}
+css
+/* Contour jaune quand on clique dans un champ */
+select:focus, input:focus {
+    outline: none;
+    border-color: #ffc933;
+}
+
+/* ===== Historique ===== */
+.history-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+/* Le graphique : barres côte à côte, collées en bas */
+#history-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 180px;
+    padding: 10px 10px 0 10px;
+    border-bottom: 2px solid #ffc933;
+}
+
+.history-column {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+}
+
+.history-bar {
+    width: 100%;
+    background-color: #ffc933;
+    border-radius: 3px 3px 0 0;
+}
+
+/* Les dates sous le graphique */
+#history-labels {
+    display: flex;
+    gap: 4px;
+    padding: 0 10px;
+}
+
+#history-labels div {
+    flex: 1;
+    text-align: center;
+    font-size: 11px;
+    color: #c4c7cc;
+    margin-top: 6px;
+}

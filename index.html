@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mizan — Bijouterie Al Andalous</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="site-header">
+            <h1>Mizan</h1>
+            <p class="subtitle">Bijouterie Al Andalous · Cours de l'or et de l'argent</p>
+            <p id="datetime-container">Chargement de la date...</p>
+        </header>
+        <div class="controls">
+            <div class="currency-group">
+                <label for="currency">Devise</label>
+                <select id="currency">
+                    <option value="MAD">MAD</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                </select>
+            </div>
+            <button id="refresh-btn">Actualiser</button>
+        </div>
+        <div id="status" hidden>
+            <p id="status-message"></p>
+            <button id="retry-btn" hidden>Réessayer</button>
+        </div>
+         <!-- Date de dernière mise à jour donnée par l'API -->
+            <p id="last-update"></p>
+        <div id="prices-container">
+            <p>Chargement des cours...</p>
+        </div>
+                <!-- Historique des prix -->
+        <div class="card" id="history-section">
+            <h3>Historique des prix</h3>
+            <div class="form-group">
+                <label for="history-metal">Métal : </label>
+                <select id="history-metal">
+                    <option value="xau">Or</option>
+                    <option value="silver">Argent</option>
+                </select>
+            </div>
+            <div class="history-buttons">
+                <button id="history-7">7 jours</button>
+                <button id="history-30">30 jours</button>
+            </div>
+            <!-- Message : chargement ou erreur -->
+            <p id="history-message"></p>
+            <!-- Le graphique (les barres) et les dates dessous -->
+            <div id="history-chart"></div>
+            <div id="history-labels"></div>
+        </div>
+        <div class="card">
+            <h3>Estimateur de bijou (Salma)</h3>
+            <div class="form-group">
+                <label for="metal-type">Métal : </label>
+                <select id="metal-type">
+                    <option value="gold">Or (XAU)</option>
+                    <option value="silver">Argent (Silver)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="weight">Poids (g) : </label>
+                <input type="number" id="weight" placeholder="Ex: 10" min="0" step="0.01">
+            </div>
+            <p>Valeur estimée : <span id="estimate">0.00</span></p>
+            <p id="estimator-error" class="error"></p>
+        </div>
+    </div> 
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
