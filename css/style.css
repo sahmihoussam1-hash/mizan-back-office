@@ -235,3 +235,99 @@ select:focus, input:focus {
     color: #c4c7cc;
     margin-top: 6px;
 }
+
+/* ===== Menu entre les pages ===== */
+.site-nav {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 14px;
+}
+
+.site-nav a {
+    color: #c4c7cc;
+    text-decoration: none;
+    font-weight: bold;
+    padding-bottom: 3px;
+    border-bottom: 2px solid transparent;
+}
+
+.site-nav a:hover,
+.site-nav a.active {
+    color: #ffc933;
+    border-bottom: 2px solid #ffc933;
+}
+
+/* ===== Barre de recherche, filtre et tri du catalogue ===== */
+.catalogue-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.catalogue-controls input {
+    flex: 1;
+    min-width: 180px;
+}
+/* ===== Messages du catalogue ===== */
+#catalogue-status {
+    background-color: #35373c;
+    border-left: 4px solid #ffc933;
+    border-radius: 5px;
+    padding: 12px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.empty-message {
+    text-align: center;
+    color: #c4c7cc;
+}
+
+/* ===== Cartes des articles ===== */
+.article-card {
+    background-color: #35373c;
+    border: 1px solid #4a4d54;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+}
+
+.article-card h3 {
+    margin: 0 0 8px 0;
+    color: #ffc933;
+}
+
+.article-description {
+    margin: 8px 0;
+    color: #c4c7cc;
+}
+
+.article-price {
+    margin: 8px 0 0 0;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.article-date {
+    margin: 4px 0 0 0;
+    font-size: 13px;
+    color: #9a9da4;
+}
+
+/* Les étiquettes de statut */
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.badge-available { background-color: #4ade80; color: #1a1a1a; }
+.badge-reserved  { background-color: #ffc933; color: #1a1a1a; }
+.badge-sold      { background-color: #9a9da4; color: #1a1a1a; }
+.center {
+    text-align: center;
+}
