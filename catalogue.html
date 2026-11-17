@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogue — Bijouterie Al Andalous</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+
+        <!-- En-tête et menu -->
+        <header class="site-header">
+            <h1>Mizan</h1>
+            <p class="subtitle">Bijouterie Al Andalous · Catalogue</p>
+    <nav class="site-nav">
+                <a href="index.html">Cours</a>
+                <a href="catalogue.html" class="active">Catalogue</a>
+            </nav>
+        </header>
+
+        <!-- Recherche, filtre et tri -->
+        <div class="catalogue-controls">
+            <input type="search" id="search-input" placeholder="Rechercher un article...">
+
+            <select id="status-filter">
+                <option value="all">Tous les statuts</option>
+                <option value="available">Disponible</option>
+                <option value="reserved">Réservé</option>
+                <option value="sold">Vendu</option>
+            </select>
+
+            <select id="sort-select">
+                <option value="date-desc">Plus récents</option>
+                <option value="title-asc">Titre (A → Z)</option>
+                <option value="price-asc">Prix croissant</option>
+                <option value="price-desc">Prix décroissant</option>
+            </select>
+
+            <button id="refresh-btn">Rafraîchir</button>
+        </div>
+
+        <!-- Bandeau hors-ligne (US-07), caché au départ -->
+        <div id="offline-banner" hidden></div>
+
+        <!-- Message : chargement, erreur ou succès -->
+        <div id="catalogue-status" hidden>
+            <p id="catalogue-message"></p>
+            <button id="catalogue-retry" hidden>Réessayer</button>
+        </div>
+
+        <!-- La liste des articles -->
+        <div id="catalogue-container"></div>
+                <!-- Bouton affiché quand la recherche ne trouve rien -->
+        <div class="center">
+            <button id="reset-filters" hidden>Réinitialiser les filtres</button>
+        </div>
+
+    </div>
+
+    <script type="module" src="js/backoffice/app.js"></script>
+</body>
+</html>
