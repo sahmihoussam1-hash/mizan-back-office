@@ -85,3 +85,20 @@ export function clearList() {
     document.getElementById('catalogue-container').textContent = '';
     document.getElementById('reset-filters').hidden = true;
 }
+// ----- Message après une action (type : 'success' ou 'error') -----
+let messageTimer;
+
+export function showActionMessage(text, type) {
+    const box = document.getElementById('action-message');
+    box.textContent = text;
+    box.className = 'action-message ' + type;
+    box.hidden = false;
+
+    clearTimeout(messageTimer);
+    if (type === 'success') {
+        // Le message de succès disparaît seul après 4 secondes
+        messageTimer = setTimeout(function () {
+            box.hidden = true;
+        }, 4000);
+    }
+}

@@ -9,6 +9,10 @@ export const state = {
 export function setArticles(list) {
     state.articles = list;
 }
+// Ajoute un article en tête de liste
+export function addArticle(article) {
+    state.articles.unshift(article);
+}
 
 export function setSearch(text) {
     state.search = text;

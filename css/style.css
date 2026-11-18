@@ -331,3 +331,83 @@ select:focus, input:focus {
 .center {
     text-align: center;
 }
+/* ===== Formulaire d'ajout ===== */
+.form-card {
+    background-color: #35373c;
+    border: 1px solid #4a4d54;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+}
+
+.form-card summary {
+    cursor: pointer;
+    font-weight: bold;
+    color: #ffc933;
+}
+
+.form-card form {
+    margin-top: 15px;
+}
+
+.form-card input,
+.form-card textarea,
+.form-card select {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+textarea {
+    padding: 10px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    border-radius: 6px;
+    border: 1px solid #4a4d54;
+    background-color: #1f2023;
+    color: #d4d6da;
+    resize: vertical;
+}
+
+.field-error {
+    color: #f87171;
+    font-size: 13px;
+    min-height: 16px;
+    margin: 4px 0 0 0;
+}
+
+/* ===== Message après une action ===== */
+.action-message {
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.action-message.success {
+    background-color: #16351f;
+    border-left: 4px solid #4ade80;
+}
+
+.action-message.error {
+    background-color: #3b1d1d;
+    border-left: 4px solid #f87171;
+}
+
+/* ===== Petit cercle qui tourne pendant l'envoi ===== */
+button.loading::after {
+    content: "";
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-left: 8px;
+    border: 2px solid #1a1a1a;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
