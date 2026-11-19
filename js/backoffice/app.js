@@ -1,5 +1,5 @@
 import {
-    getArticles, createArticle, replaceArticle, patchArticle, deleteArticle
+    getArticle, getArticles, createArticle, replaceArticle, patchArticle, deleteArticle
 } from './services/catalogueApi.js';
 import {
     state, setArticles, addArticle, removeArticle, restoreArticle, replaceInState,
@@ -11,6 +11,9 @@ import {
 } from './ui/display.js';
 import { readForm, showFieldErrors, setFormBusy, startEditing, resetForm } from './ui/form.js';
 import { askConfirmation } from './ui/modals.js';
+import {
+    initDetail, openDetail, showDetailArticle, showDetailError
+} from './ui/detail.js';
 import { validateArticle } from './validation.js';
 import { saveCache, readCache, isFresh } from './storage/storage.js';
 
@@ -108,6 +111,59 @@ async function loadArticles(forceNetwork = false) {
     refreshBtn.disabled = false;
     retryBtn.disabled = false;
 }
+
+// ----- Afficher le détail d'un article : GET /:id (US-02) -----
+async function showDetail(id) {
+    openDetail();
+    try {
+        const article = await getArticle(id);
+        showDetailArticle(article);
+    } catch (error) {
+        // Si l'article a été créé localement ou serveur hors-ligne, on regarde dans l'état local
+        const localArticle = findArticle(id);
+        if (localArticle) {
+            showDetailArticle(localArticle);
+        } else {
+            showDetailError(error);
+        }
+    }
+}
+
+// ----- Supprimer un article : DELETE avec mise à jour optimiste (US-05) -----
+async function handleDelete(id) {
+    const article = findArticle(id);
+    if (!article) return;
+
+    const confirmed = await askConfirmation(
+        'Voulez-vous vraiment supprimer l’article « ' + article.title + ' » ?'
+    );
+    if (!confirmed) return;
+
+    // 1. Mise à jour optimiste : on retire immédiatement de l'état et on met à jour l'écran
+    const backup = removeArticle(id);
+    if (editingId === id) {
+        editingId = null;
+        resetForm();
+    }
+    updateList();
+
+    try {
+        // 2. Appel API DELETE
+        await deleteArticle(id);
+        saveCache(state.articles);
+        showActionMessage('Article « ' + article.title + ' » supprimé.', 'success');
+    } catch (error) {
+        // 3. En cas d'échec API : on restaure l'article à sa position d'origine
+        restoreArticle(backup);
+        updateList();
+        showActionMessage(
+            error.message + ' L’article a été restauré dans la liste.',
+            'error'
+        );
+        refreshIfMissing(error);
+    }
+}
+
 // ----- Modifier une partie de l'article : PATCH (US-04) -----
 async function handlePatch(id, changes, control) {
     control.disabled = true;
@@ -116,7 +172,7 @@ async function handlePatch(id, changes, control) {
     try {
         const updated = await patchArticle(id, changes);
         replaceInState(updated);
-        saveCache(state.articles);    // ← 3b
+        saveCache(state.articles);
         updateList();
         showActionMessage('Article « ' + updated.title + ' » mis à jour.', 'success');
     } catch (error) {
@@ -133,6 +189,10 @@ listContainer.addEventListener('click', function (event) {
         return;
     }
     const id = Number(button.dataset.id);
+
+    if (button.dataset.action === 'detail') {
+        showDetail(id);
+    }
 
     if (button.dataset.action === 'delete') {
         handleDelete(id);
@@ -187,7 +247,7 @@ articleForm.addEventListener('submit', async function (event) {
             });
 
             addArticle(created);
-            saveCache(state.articles);    // ← 3b
+            saveCache(state.articles);
             resetControls();
             updateList();
             resetForm();
@@ -210,7 +270,7 @@ articleForm.addEventListener('submit', async function (event) {
             });
 
             replaceInState(updated);
-            saveCache(state.articles);    // ← 3b
+            saveCache(state.articles);
             editingId = null;
             updateList();
             resetForm();
@@ -260,4 +320,6 @@ retryBtn.addEventListener('click', function () {
     loadArticles(true);
 });
 
-//
+// ----- Lancement au démarrage de la page -----
+initDetail();
+loadArticles();
