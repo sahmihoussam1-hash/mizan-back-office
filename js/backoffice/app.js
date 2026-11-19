@@ -5,10 +5,14 @@ import {
     state, setArticles, addArticle, removeArticle, restoreArticle, replaceInState,
     setSearch, setStatus, setSort, resetFilters, hasActiveFilters, getVisibleArticles
 } from './state/store.js';
-import { renderArticles, clearList, showStatus, hideStatus, showActionMessage } from './ui/display.js';
+import {
+    renderArticles, clearList, showStatus, hideStatus, showActionMessage,
+    showOfflineBanner, hideOfflineBanner
+} from './ui/display.js';
 import { readForm, showFieldErrors, setFormBusy, startEditing, resetForm } from './ui/form.js';
 import { askConfirmation } from './ui/modals.js';
 import { validateArticle } from './validation.js';
+import { saveCache, readCache, isFresh } from './storage/storage.js';
 
 const searchInput = document.getElementById('search-input');
 const statusFilter = document.getElementById('status-filter');
@@ -42,8 +46,37 @@ function findArticle(id) {
     });
 }
 
-// Va chercher les articles sur le serveur
-async function loadArticles() {
+// Le serveur est-il injoignable ? (dans ce cas, on peut utiliser le carnet)
+function isUnreachable(error) {
+    if (error.type === 'offline' || error.type === 'network' || error.type === 'timeout') {
+        return true;
+    }
+    return error.type === 'http' && error.status >= 500;
+}
+
+// Si le serveur répond 404, l'article n'existe plus : on recharge la liste
+function refreshIfMissing(error) {
+    if (error.type === 'http' && error.status === 404) {
+        loadArticles(true);
+    }
+}
+
+// ----- Charger les articles (US-02 et US-07) -----
+// forceNetwork = true : on ignore le carnet et on appelle toujours le serveur
+async function loadArticles(forceNetwork = false) {
+    // 1. Un carnet de moins de 5 minutes ? On l'utilise, sans appeler le serveur
+    if (!forceNetwork) {
+        const cached = readCache();
+        if (cached !== null && isFresh(cached)) {
+            setArticles(cached.items);
+            hideOfflineBanner();
+            hideStatus();
+            updateList();
+            return;
+        }
+    }
+
+    // 2. Sinon : on appelle le serveur
     refreshBtn.disabled = true;
     retryBtn.disabled = true;
     showStatus('Chargement des articles...');
@@ -51,11 +84,23 @@ async function loadArticles() {
     try {
         const articles = await getArticles();
         setArticles(articles);
+        saveCache(articles);          // on recopie la liste dans le carnet
+        hideOfflineBanner();
         updateList();
         hideStatus();
     } catch (error) {
-        clearList();
-        showStatus(error.message, true);
+        // 3. Le serveur est injoignable : a-t-on un carnet, même ancien ?
+        const cached = readCache();
+        if (cached !== null && isUnreachable(error)) {
+            setArticles(cached.items);
+            updateList();
+            hideStatus();
+            showOfflineBanner(cached.savedAt);
+        } else {
+            hideOfflineBanner();
+            clearList();
+            showStatus(error.message, true);
+        }
     }
 
     refreshBtn.disabled = false;
@@ -91,27 +136,31 @@ async function handleDelete(id) {
 
     try {
         await deleteArticle(id);
+        saveCache(state.articles);    // ← 3b : le carnet suit la liste
         showActionMessage('Article « ' + article.title + ' » supprimé.', 'success');
     } catch (error) {
         restoreArticle(article, index);
         updateList();
         showActionMessage(error.message + " L'article a été remis dans la liste.", 'error');
+        refreshIfMissing(error);
     }
 }
 
 // ----- Modifier une partie de l'article : PATCH (US-04) -----
 async function handlePatch(id, changes, control) {
-    control.disabled = true;   // retour visuel : le contrôle est bloqué pendant l'envoi
+    control.disabled = true;
     showActionMessage('Modification en cours...', 'info');
 
     try {
         const updated = await patchArticle(id, changes);
         replaceInState(updated);
+        saveCache(state.articles);    // ← 3b
         updateList();
         showActionMessage('Article « ' + updated.title + ' » mis à jour.', 'success');
     } catch (error) {
-        updateList();   // les contrôles reprennent leur ancienne valeur
+        updateList();
         showActionMessage(error.message, 'error');
+        refreshIfMissing(error);
     }
 }
 
@@ -176,6 +225,7 @@ articleForm.addEventListener('submit', async function (event) {
             });
 
             addArticle(created);
+            saveCache(state.articles);    // ← 3b
             resetControls();
             updateList();
             resetForm();
@@ -198,14 +248,15 @@ articleForm.addEventListener('submit', async function (event) {
             });
 
             replaceInState(updated);
+            saveCache(state.articles);    // ← 3b
             editingId = null;
             updateList();
             resetForm();
             showActionMessage('Article « ' + updated.title + ' » modifié.', 'success');
         }
     } catch (error) {
-        // Erreur : on garde la saisie dans le formulaire
         showActionMessage(error.message + ' Votre saisie est conservée : vous pouvez réessayer.', 'error');
+        refreshIfMissing(error);
     }
 
     setFormBusy(false);
@@ -238,8 +289,13 @@ resetBtn.addEventListener('click', function () {
     updateList();
 });
 
-refreshBtn.addEventListener('click', loadArticles);
-retryBtn.addEventListener('click', loadArticles);
+// « Rafraîchir » et « Réessayer » forcent l'appel au serveur
+refreshBtn.addEventListener('click', function () {
+    loadArticles(true);
+});
 
-// Premier chargement
-loadArticles();
+retryBtn.addEventListener('click', function () {
+    loadArticles(true);
+});
+
+//
