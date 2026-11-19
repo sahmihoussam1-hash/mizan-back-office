@@ -110,6 +110,17 @@
             </div>
         </div>
     </div>
+    <!-- Fenêtre de détail d'un article (cachée au départ) -->
+    <div id="detail-overlay" class="modal-overlay" hidden>
+        <div class="modal detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+            <h3 id="detail-title">Détail de l'article</h3>
+            <div id="detail-body"></div>
+            <div class="modal-buttons">
+                <button id="detail-retry" hidden>Réessayer</button>
+                <button id="detail-close">Fermer</button>
+            </div>
+        </div>
+    </div>
     <script type="module" src="js/backoffice/app.js"></script>
 </body>
 </html>

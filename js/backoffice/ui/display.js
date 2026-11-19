@@ -1,5 +1,5 @@
 // Les statuts sont stockés en anglais, mais affichés en français
-const STATUS_LABELS = {
+export const STATUS_LABELS = {
     available: 'Disponible',
     reserved: 'Réservé',
     sold: 'Vendu'
@@ -8,7 +8,7 @@ const STATUS_LABELS = {
 // ----- Les messages (chargement, erreur) -----
 
 // Choisit un titre et un conseil selon le type d'erreur
-function describeError(error) {
+ export function describeError(error) {
     if (error.type === 'offline') {
         return {
             title: 'Vous êtes hors-ligne',
@@ -134,6 +134,12 @@ function createArticleCard(article) {
     deleteButton.dataset.action = 'delete';
     deleteButton.dataset.id = article.id;
 
+        const detailButton = document.createElement('button');
+    detailButton.textContent = 'Détail';
+    detailButton.dataset.action = 'detail';
+    detailButton.dataset.id = article.id;
+
+    actions.appendChild(detailButton);
     actions.appendChild(editButton);
     actions.appendChild(deleteButton);
 
