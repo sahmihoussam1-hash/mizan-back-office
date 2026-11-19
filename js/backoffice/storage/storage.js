@@ -41,3 +41,38 @@ export function readCache() {
 export function isFresh(entry) {
     return Date.now() - entry.savedAt < TTL_MS;
 }
+const PREFS_KEY = 'mizan_backoffice_prefs_v1';
+
+const DEFAULT_PREFS = {
+    status: 'all',
+    sort: 'date-desc',
+    theme: 'dark'
+};
+
+export function savePrefs(prefs) {
+    try {
+        const current = readPrefs();
+        const updated = { ...current, ...prefs };
+        localStorage.setItem(PREFS_KEY, JSON.stringify(updated));
+    } catch {
+        // Ignore les erreurs de quota ou navigation privée
+    }
+}
+
+export function readPrefs() {
+    try {
+        const raw = localStorage.getItem(PREFS_KEY);
+        if (!raw) return { ...DEFAULT_PREFS };
+        const parsed = JSON.parse(raw);
+        if (typeof parsed !== 'object' || parsed === null) {
+            return { ...DEFAULT_PREFS };
+        }
+        return {
+            status: parsed.status || DEFAULT_PREFS.status,
+            sort: parsed.sort || DEFAULT_PREFS.sort,
+            theme: parsed.theme === 'light' ? 'light' : 'dark'
+        };
+    } catch {
+        return { ...DEFAULT_PREFS };
+    }
+}
