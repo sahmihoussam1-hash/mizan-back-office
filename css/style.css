@@ -485,3 +485,13 @@ button.loading::after {
     background-color: #ef4444;
     border-color: #ef4444;
 }
+/* ===== Bandeau hors-ligne ===== */
+#offline-banner {
+    background-color: #3b2f10;
+    border-left: 4px solid #ffc933;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 14px;
+}

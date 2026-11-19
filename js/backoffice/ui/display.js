@@ -155,3 +155,14 @@ export function showActionMessage(text, type) {
         }, 4000);
     }
 }
+// ----- Bandeau "données hors-ligne" -----
+
+export function showOfflineBanner(timestamp) {
+    const banner = document.getElementById('offline-banner');
+    banner.textContent = 'Données du ' + new Date(timestamp).toLocaleString('fr-FR') + ' (hors-ligne)';
+    banner.hidden = false;
+}
+
+export function hideOfflineBanner() {
+    document.getElementById('offline-banner').hidden = true;
+}
