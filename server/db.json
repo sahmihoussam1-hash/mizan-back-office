@@ -1,0 +1,60 @@
+{
+  "articles": [
+    {
+      "id": 1,
+      "title": "Bague solitaire en or 18 carats",
+      "description": "Bague en or jaune 18 carats, poids 4,5 g, taille 54.",
+      "price": 6200,
+      "status": "available",
+      "createdAt": "2026-10-02T09:30:00.000Z"
+    },
+    {
+      "id": 2,
+      "title": "Lingot d'or 10 g",
+      "description": "Lingot d'or 24 carats de 10 grammes avec certificat.",
+      "price": 12900,
+      "status": "available",
+      "createdAt": "2026-10-05T11:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "title": "Collier en argent 925",
+      "description": "Collier en argent massif 925, chaîne de 45 cm.",
+      "price": 450,
+      "status": "reserved",
+      "createdAt": "2026-10-08T14:15:00.000Z"
+    },
+    {
+      "id": 4,
+      "title": "Pièce d'or 20 francs Napoléon",
+      "description": "Pièce d'or ancienne de 20 francs, état très bon.",
+      "price": 4800,
+      "status": "available",
+      "createdAt": "2026-10-12T10:00:00.000Z"
+    },
+    {
+      "id": 5,
+      "title": "Bracelet jonc en or 21 carats",
+      "description": "Bracelet jonc ciselé à la main, poids 12 g.",
+      "price": 15400,
+      "status": "sold",
+      "createdAt": "2026-10-15T16:45:00.000Z"
+    },
+    {
+      "id": 6,
+      "title": "Pièce d'argent 5 dirhams",
+      "description": "Pièce d'argent de collection, frappe ancienne.",
+      "price": 320,
+      "status": "available",
+      "createdAt": "2026-10-20T09:00:00.000Z"
+    },
+    {
+      "id": 7,
+      "title": "Boucles d'oreilles en or blanc",
+      "description": "Paire de boucles en or blanc 18 carats avec perles.",
+      "price": 3999,
+      "status": "available",
+      "createdAt": "2026-10-25T13:20:00.000Z"
+    }
+  ]
+}
