@@ -15,7 +15,7 @@ import {
     initDetail, openDetail, showDetailArticle, showDetailError
 } from './ui/detail.js';
 import { validateArticle } from './validation.js';
-import { saveCache, readCache, isFresh } from './storage/storage.js';
+import { saveCache, readCache, isFresh, savePrefs, readPrefs } from './storage/storage.js';
 
 const searchInput = document.getElementById('search-input');
 const statusFilter = document.getElementById('status-filter');
@@ -36,12 +36,27 @@ function updateList() {
 }
 
 // Remet la recherche, le filtre et le tri à zéro (état ET contrôles)
+// Dans resetControls() :
 function resetControls() {
     resetFilters();
     searchInput.value = '';
     statusFilter.value = 'all';
     sortSelect.value = 'date-desc';
+    savePrefs({ status: 'all', sort: 'date-desc' });
 }
+
+// Dans les écouteurs de filtre et tri :
+statusFilter.addEventListener('change', function () {
+    setStatus(statusFilter.value);
+    savePrefs({ status: statusFilter.value });
+    updateList();
+});
+
+sortSelect.addEventListener('change', function () {
+    setSort(sortSelect.value);
+    savePrefs({ sort: sortSelect.value });
+    updateList();
+});
 
 function findArticle(id) {
     return state.articles.find(function (item) {
@@ -63,7 +78,16 @@ function refreshIfMissing(error) {
         loadArticles(true);
     }
 }
+// ----- Restauration des préférences au démarrage (US-08) -----
+const savedPrefs = readPrefs();
+statusFilter.value = savedPrefs.status;
+sortSelect.value = savedPrefs.sort;
+setStatus(savedPrefs.status);
+setSort(savedPrefs.sort);
 
+// ----- Lancement au démarrage de la page -----
+initDetail();
+loadArticles();
 // ----- Charger les articles (US-02 et US-07) -----
 // forceNetwork = true : on ignore le carnet et on appelle toujours le serveur
 async function loadArticles(forceNetwork = false) {
