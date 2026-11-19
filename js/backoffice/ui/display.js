@@ -7,19 +7,94 @@ const STATUS_LABELS = {
 
 // ----- Les messages (chargement, erreur) -----
 
+// Choisit un titre et un conseil selon le type d'erreur
+function describeError(error) {
+    if (error.type === 'offline') {
+        return {
+            title: 'Vous êtes hors-ligne',
+            hint: 'Vérifiez votre connexion internet, puis cliquez sur « Réessayer ».'
+        };
+    }
+    if (error.type === 'network') {
+        return {
+            title: 'Serveur injoignable',
+            hint: 'Vérifiez que le serveur est lancé, puis cliquez sur « Réessayer ».'
+        };
+    }
+    if (error.type === 'timeout') {
+        return {
+            title: 'Le serveur met trop de temps à répondre',
+            hint: 'Patientez quelques instants, puis cliquez sur « Réessayer ».'
+        };
+    }
+    if (error.type === 'parse') {
+        return {
+            title: 'Réponse du serveur illisible',
+            hint: 'Le serveur a envoyé des données inattendues. Réessayez plus tard.'
+        };
+    }
+    if (error.type === 'http' && error.status === 404) {
+        return {
+            title: 'Contenu introuvable (erreur 404)',
+            hint: "L'élément demandé n'existe pas. Cliquez sur « Réessayer » pour recharger la liste."
+        };
+    }
+    if (error.type === 'http' && error.status >= 500) {
+        return {
+            title: 'Erreur du serveur (erreur ' + error.status + ')',
+            hint: 'Le problème vient du serveur, pas de votre appareil. Réessayez dans quelques minutes.'
+        };
+    }
+    return {
+        title: 'Une erreur est survenue',
+        hint: error.message || 'Cliquez sur « Réessayer ».'
+    };
+}
+
+// Message simple (par exemple : chargement)
 export function showStatus(message, withRetry = false) {
-    document.getElementById('catalogue-status').hidden = false;
+    const box = document.getElementById('catalogue-status');
+    box.hidden = false;
+    box.classList.remove('is-error');
     document.getElementById('catalogue-message').textContent = message;
+    document.getElementById('catalogue-hint').hidden = true;
     document.getElementById('catalogue-retry').hidden = !withRetry;
+}
+
+// Erreur : titre + conseil + bouton « Réessayer »
+export function showError(error) {
+    const info = describeError(error);
+    const box = document.getElementById('catalogue-status');
+    box.hidden = false;
+    box.classList.add('is-error');
+    document.getElementById('catalogue-message').textContent = info.title;
+
+    const hint = document.getElementById('catalogue-hint');
+    hint.textContent = info.hint;
+    hint.hidden = false;
+
+    document.getElementById('catalogue-retry').hidden = false;
 }
 
 export function hideStatus() {
     document.getElementById('catalogue-status').hidden = true;
 }
 
+// ----- Squelette de chargement : 3 fausses cartes grises -----
+export function showSkeleton() {
+    const container = document.getElementById('catalogue-container');
+    container.textContent = '';
+    document.getElementById('reset-filters').hidden = true;
+
+    for (let i = 0; i < 3; i++) {
+        const card = document.createElement('div');
+        card.classList.add('skeleton-card');
+        container.appendChild(card);
+    }
+}
+
 // ----- La liste des articles -----
 
-// Fabrique la carte d'un seul article
 // Fabrique la carte d'un seul article
 function createArticleCard(article) {
     const card = document.createElement('div');
@@ -117,7 +192,7 @@ export function renderArticles(articles, hasFilters) {
 
         if (hasFilters) {
             empty.textContent = 'Aucun article ne correspond à votre recherche.';
-            resetButton.hidden = false;      // on propose de réinitialiser
+            resetButton.hidden = false;
         } else {
             empty.textContent = 'Aucun article dans le catalogue.';
             resetButton.hidden = true;
@@ -138,7 +213,8 @@ export function clearList() {
     document.getElementById('catalogue-container').textContent = '';
     document.getElementById('reset-filters').hidden = true;
 }
-// ----- Message après une action (type : 'success' ou 'error') -----
+
+// ----- Message après une action (type : 'success', 'error' ou 'info') -----
 let messageTimer;
 
 export function showActionMessage(text, type) {
@@ -155,6 +231,7 @@ export function showActionMessage(text, type) {
         }, 4000);
     }
 }
+
 // ----- Bandeau "données hors-ligne" -----
 
 export function showOfflineBanner(timestamp) {

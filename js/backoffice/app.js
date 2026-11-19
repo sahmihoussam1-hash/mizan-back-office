@@ -6,8 +6,8 @@ import {
     setSearch, setStatus, setSort, resetFilters, hasActiveFilters, getVisibleArticles
 } from './state/store.js';
 import {
-    renderArticles, clearList, showStatus, hideStatus, showActionMessage,
-    showOfflineBanner, hideOfflineBanner
+    renderArticles, clearList, showStatus, showError, hideStatus, showActionMessage,
+    showOfflineBanner, hideOfflineBanner, showSkeleton
 } from './ui/display.js';
 import { readForm, showFieldErrors, setFormBusy, startEditing, resetForm } from './ui/form.js';
 import { askConfirmation } from './ui/modals.js';
@@ -76,20 +76,21 @@ async function loadArticles(forceNetwork = false) {
         }
     }
 
-    // 2. Sinon : on appelle le serveur
+    // 2. Sinon : état CHARGEMENT, puis appel au serveur
     refreshBtn.disabled = true;
     retryBtn.disabled = true;
     showStatus('Chargement des articles...');
+    showSkeleton();
 
     try {
         const articles = await getArticles();
         setArticles(articles);
-        saveCache(articles);          // on recopie la liste dans le carnet
+        saveCache(articles);
         hideOfflineBanner();
         updateList();
         hideStatus();
     } catch (error) {
-        // 3. Le serveur est injoignable : a-t-on un carnet, même ancien ?
+        // 3. Serveur injoignable : a-t-on un carnet, même ancien ?
         const cached = readCache();
         if (cached !== null && isUnreachable(error)) {
             setArticles(cached.items);
@@ -97,55 +98,16 @@ async function loadArticles(forceNetwork = false) {
             hideStatus();
             showOfflineBanner(cached.savedAt);
         } else {
+            // État ERREUR
             hideOfflineBanner();
             clearList();
-            showStatus(error.message, true);
+            showError(error);
         }
     }
 
     refreshBtn.disabled = false;
     retryBtn.disabled = false;
 }
-
-// ----- Supprimer un article (US-05) -----
-async function handleDelete(id) {
-    const article = findArticle(id);
-    if (!article) {
-        return;
-    }
-
-    const confirmed = await askConfirmation(
-        'Supprimer cet article ?',
-        '« ' + article.title + ' » sera retiré du catalogue.',
-        'Supprimer'
-    );
-    if (!confirmed) {
-        return;
-    }
-
-    // Si on était en train de modifier cet article, on annule la modification
-    if (editingId === id) {
-        editingId = null;
-        resetForm();
-    }
-
-    // Mise à jour optimiste : on retire l'article tout de suite
-    const index = state.articles.indexOf(article);
-    removeArticle(id);
-    updateList();
-
-    try {
-        await deleteArticle(id);
-        saveCache(state.articles);    // ← 3b : le carnet suit la liste
-        showActionMessage('Article « ' + article.title + ' » supprimé.', 'success');
-    } catch (error) {
-        restoreArticle(article, index);
-        updateList();
-        showActionMessage(error.message + " L'article a été remis dans la liste.", 'error');
-        refreshIfMissing(error);
-    }
-}
-
 // ----- Modifier une partie de l'article : PATCH (US-04) -----
 async function handlePatch(id, changes, control) {
     control.disabled = true;
