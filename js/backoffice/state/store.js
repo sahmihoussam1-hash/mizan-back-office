@@ -6,13 +6,40 @@ export const state = {
     sort: 'date-desc'
 };
 
+// ----- La liste des articles -----
+
 export function setArticles(list) {
     state.articles = list;
 }
+
 // Ajoute un article en tête de liste
 export function addArticle(article) {
     state.articles.unshift(article);
 }
+
+// Retire un article de la liste
+export function removeArticle(id) {
+    state.articles = state.articles.filter(function (article) {
+        return article.id !== id;
+    });
+}
+
+// Remet un article à sa place (si le serveur a refusé la suppression)
+export function restoreArticle(article, index) {
+    state.articles.splice(index, 0, article);
+}
+
+// Remplace un article par sa nouvelle version (même id)
+export function replaceInState(updated) {
+    state.articles = state.articles.map(function (article) {
+        if (article.id === updated.id) {
+            return updated;
+        }
+        return article;
+    });
+}
+
+// ----- Recherche, filtre et tri -----
 
 export function setSearch(text) {
     state.search = text;
@@ -42,14 +69,12 @@ export function hasActiveFilters() {
 export function getVisibleArticles() {
     const search = state.search.trim().toLowerCase();
 
-    // 1 et 2. On garde les articles qui correspondent à la recherche ET au statut
     const result = state.articles.filter(function (article) {
         const matchesSearch = article.title.toLowerCase().includes(search);
         const matchesStatus = state.status === 'all' || article.status === state.status;
         return matchesSearch && matchesStatus;
     });
 
-    // 3. On trie (filter a déjà créé une copie : la liste d'origine ne bouge pas)
     result.sort(function (a, b) {
         if (state.sort === 'title-asc') {
             return a.title.localeCompare(b.title, 'fr');
@@ -60,7 +85,6 @@ export function getVisibleArticles() {
         if (state.sort === 'price-desc') {
             return b.price - a.price;
         }
-        // par défaut : les plus récents d'abord
         return new Date(b.createdAt) - new Date(a.createdAt);
     });
 

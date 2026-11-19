@@ -1,6 +1,6 @@
 // 1. L'adresse de base : la seule chose à changer si le serveur change
-const BASE_URL = 'http://localhost:3001';
-
+const BASE_URL = 'http://localhost:3002';
+// const BASE_URL = 'http://localhost:3002';
 // 3. Le délai maximum : 8 secondes
 const TIMEOUT_MS = 8000;
 
