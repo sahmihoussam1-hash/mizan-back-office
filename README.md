@@ -16,7 +16,7 @@ Le projet est composé de **deux pages** qui partagent la même charte graphique
   - Édition complète d'un article via le formulaire principal (`PUT`).
   - Modification rapide du statut ou du prix directement sur la carte (`PATCH`).
 - **Suppression (`DELETE`)** : Confirmation via une fenêtre modale personnalisée (sans `window.confirm`), suppression immédiate à l'écran (mise à jour optimiste) et restauration automatique de l'article si la requête échoue.
-- **États d'interface visibles** : Squelettes de chargement (*skeleton*), état vide avec bouton de réinitialisation des filtres, et état d'erreur avec bouton « Réessayer ».
+- **États d'interface visibles** : Cartes de chargement (*skeleton*), état vide avec bouton de réinitialisation des filtres, et état d'erreur avec bouton « Réessayer ».
 - **Cache et mode hors-ligne (`localStorage`)** : Sauvegarde du catalogue pendant 5 minutes (TTL) pour limiter les appels réseau et permettre la consultation même sans connexion internet.
 - **Préférences utilisateur** : Mémorisation automatique du filtre de statut et de l'ordre de tri au rechargement de la page.
 
@@ -30,8 +30,9 @@ Pour garder un code propre et facile à maintenir, le JavaScript du back-office 
 mizan-back-office/
 ├── index.html                  # Page 1 : Cours des métaux et estimateur
 ├── catalogue.html              # Page 2 : Back-office CRUD du catalogue
+├── screenshots/                # Captures d'écran des états de l'application
 ├── css/
-│   └── style.css               # Feuille de style unique avec variables CSS
+│   └── style.css               # Feuille de style unique et épurée
 └── js/
     ├── api.js, calculator.js... # Modules de la page 1 (Mizan 1)
     └── backoffice/             # Modules de la page 2 (Mizan 2)
@@ -49,3 +50,23 @@ mizan-back-office/
             ├── form.js         # Lecture et pré-remplissage du formulaire
             ├── modals.js       # Modale de confirmation maison
             └── detail.js       # Modale d'affichage du détail d'un article
+
+            ## Aperçu des états de l'application
+
+### 1. Catalogue principal et formulaire
+![Liste des articles](screenshots/01-liste.png)
+
+### 2. État de chargement (Skeleton)
+![État de chargement](screenshots/02-chargement.png)
+
+### 3. Mode hors-ligne (Lecture depuis le cache localStorage)
+![Mode hors-ligne](screenshots/03-offline.png)
+
+### 4. État vide / État d'erreur
+![État vide ou erreur](screenshots/04-erreur-ou-vide.png)
+
+---
+
+## Améliorations futures (Non implémenté)
+
+- **US-09 (Bonus) — Panneau réseau repliable** : Affichage des 5 dernières requêtes HTTP effectuées (méthode, URL, code statut et durée en millisecondes).
