@@ -1,72 +1,75 @@
-# Mizan — Bijouterie Al Andalous (Nador)
-
-Application web développée en **HTML5, CSS3 et JavaScript natif (Vanilla JS)** pour la bijouterie **Al Andalous** à Nador.
-
-Le projet est composé de **deux pages** qui partagent la même charte graphique :
-1. **`index.html` (Mizan 1 — Cours & Estimateur)** : Consultation des cours de l'or et de l'argent en temps réel, conversion de devises (`MAD`, `USD`, `EUR`), graphique d'historique et estimateur de prix selon le poids en grammes.
-2. **`catalogue.html` (Mizan 2 — Back-office CRUD)** : Gestion du catalogue d'articles de la bijouterie avec création, lecture, modification, suppression, mode hors-ligne et sauvegarde des préférences.
 
 ---
 
-## Fonctionnalités du Back-office (`catalogue.html`)
+## Lancer le projet
 
-- **Consultation (`GET`)** : Affichage des articles, recherche par mot-clé, filtre par statut (`Disponible`, `Réservé`, `Vendu`), tri par date ou par prix, et modale de détail (`GET /posts/:id`).
-- **Création (`POST`)** : Formulaire d'ajout avec validation des champs (titre, description, prix positif, statut) et messages d'erreur clairs.
-- **Modification complète (`PUT`) & rapide (`PATCH`)** :
-  - Édition complète d'un article via le formulaire principal (`PUT`).
-  - Modification rapide du statut ou du prix directement sur la carte (`PATCH`).
-- **Suppression (`DELETE`)** : Confirmation via une fenêtre modale personnalisée (sans `window.confirm`), suppression immédiate à l'écran (mise à jour optimiste) et restauration automatique de l'article si la requête échoue.
-- **États d'interface visibles** : Cartes de chargement (*skeleton*), état vide avec bouton de réinitialisation des filtres, et état d'erreur avec bouton « Réessayer ».
-- **Cache et mode hors-ligne (`localStorage`)** : Sauvegarde du catalogue pendant 5 minutes (TTL) pour limiter les appels réseau et permettre la consultation même sans connexion internet.
-- **Préférences utilisateur** : Mémorisation automatique du filtre de statut et de l'ordre de tri au rechargement de la page.
+1. Ouvrir le dossier dans VS Code.
+2. Démarrer l'API de test dans un terminal dédié (à laisser ouvert) :
+
+```bash
+npx json-server@0.17.4 --watch server/db.json --port 3002
+```
+
+3. Ouvrir `index.html` ou `catalogue.html` avec Live Server.
+
+L'adresse de base du serveur est une constante (`BASE_URL`) en haut de `js/backoffice/services/apiClient.js` : c'est la seule ligne à modifier pour viser une autre API.
 
 ---
 
-## Architecture du code
+## Captures d'écran
 
-Pour garder un code propre et facile à maintenir, le JavaScript du back-office est découpé en **modules ES (`import` / `export`)** selon le rôle de chaque fichier :
-
-```text
-mizan-back-office/
-├── index.html                  # Page 1 : Cours des métaux et estimateur
-├── catalogue.html              # Page 2 : Back-office CRUD du catalogue
-├── screenshots/                # Captures d'écran des états de l'application
-├── css/
-│   └── style.css               # Feuille de style unique et épurée
-└── js/
-    ├── api.js, calculator.js... # Modules de la page 1 (Mizan 1)
-    └── backoffice/             # Modules de la page 2 (Mizan 2)
-        ├── app.js              # Chef d'orchestre (événements et coordination)
-        ├── validation.js       # Vérification des données du formulaire
-        ├── services/
-        │   ├── apiClient.js    # Fonction unique request() avec timeout (8s) et gestion d'erreurs
-        │   └── catalogueApi.js # Appels CRUD (GET, POST, PUT, PATCH, DELETE)
-        ├── storage/
-        │   └── storage.js      # Gestion du cache (TTL 5 min) et des préférences (localStorage)
-        ├── state/
-        │   └── store.js        # État local en mémoire (source de vérité pour l'affichage)
-        └── ui/
-            ├── display.js      # Création sécurisée des cartes et états d'interface
-            ├── form.js         # Lecture et pré-remplissage du formulaire
-            ├── modals.js       # Modale de confirmation maison
-            └── detail.js       # Modale d'affichage du détail d'un article
-
-            ## Aperçu des états de l'application
-
-### 1. Catalogue principal et formulaire
+### Liste des articles et formulaire
 ![Liste des articles](screenshots/01-liste.png)
 
-### 2. État de chargement (Skeleton)
+### État de chargement (squelette)
 ![État de chargement](screenshots/02-chargement.png)
 
-### 3. Mode hors-ligne (Lecture depuis le cache localStorage)
+### Mode hors-ligne (données lues depuis le cache)
 ![Mode hors-ligne](screenshots/03-offline.png)
 
-### 4. État vide / État d'erreur
+### État vide et état d'erreur
 ![État vide ou erreur](screenshots/04-erreur-ou-vide.png)
 
 ---
 
-## Améliorations futures (Non implémenté)
+## Différence entre PUT et PATCH
 
-- **US-09 (Bonus) — Panneau réseau repliable** : Affichage des 5 dernières requêtes HTTP effectuées (méthode, URL, code statut et durée en millisecondes).
+| | PUT | PATCH |
+|---|---|---|
+| Ce qu'on envoie | **tous** les champs de l'article | **seulement** les champs à modifier |
+| Champ oublié | perdu : la ressource est remplacée | inchangé |
+| Idempotence | oui : répéter la même requête donne le même résultat | oui dans notre usage (on fixe une valeur, par exemple `status: "sold"`) |
+| Usage dans l'application | bouton « Modifier » : formulaire pré-rempli, même validation que la création | changement rapide du statut ou du prix depuis la carte |
+
+À titre de comparaison, `POST` n'est **pas** idempotent : chaque envoi crée un nouvel article.
+
+---
+
+## Stratégie de cache
+
+- Chaque `GET` réussi de la liste est stocké dans `localStorage` sous la clé versionnée `catalogue:v1:items`, avec l'heure d'enregistrement.
+- **TTL de 5 minutes** : un cache plus récent est utilisé sans appeler le serveur.
+- Si le serveur est injoignable (hors-ligne, réseau, délai dépassé, erreur 5xx) et qu'un cache existe, la liste s'affiche avec le bandeau « Données du … (hors-ligne) ». Une erreur 404 ou 4xx n'est pas une panne : le cache n'est pas utilisé dans ce cas.
+- Le bouton « Rafraîchir » force l'appel réseau.
+- Après chaque ajout, modification ou suppression réussi, le cache est mis à jour avec la liste locale.
+- Un cache illisible ne fait jamais planter l'application : il est ignoré, supprimé, puis remplacé au chargement suivant.
+- Si la forme des données change, il suffit de passer à `catalogue:v2:items` : l'ancien cache est alors ignoré.
+
+---
+
+## Difficultés rencontrées
+
+| Problème | Cause | Solution |
+|---|---|---|
+| Erreur `426 Upgrade Required` et fausse erreur CORS | l'aperçu VS Code (Live Preview) occupait le port 3001 de json-server | json-server déplacé sur le port 3002 |
+| La page se rechargeait en boucle pendant les tests | Live Server détectait chaque écriture dans `db.json` | dossier `server/` exclu de la surveillance de Live Server |
+| Page entièrement vide, sans message | un `import` pointait vers une fonction absente d'un `export` : le module ne démarre pas | vérification des exports de chaque fichier, avec la console du navigateur |
+| Liste des articles sortie de la colonne centrée | une balise `</div>` en trop fermait le `container` trop tôt | balise supprimée, doublons d'`id` retirés |
+| Erreur 404 sur une modification | la liste affichée était périmée : l'article n'existait plus sur le serveur | en cas de 404, la liste est rechargée automatiquement |
+
+---
+
+## Limites et pistes d'amélioration
+
+- **US-09 (bonus) — Panneau réseau repliable** : affichage des dernières requêtes (méthode, URL, statut, durée en millisecondes). Non implémenté.
+- Le détail d'un article n'est pas mis en cache : il passe toujours par le réseau.
