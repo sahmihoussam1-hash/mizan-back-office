@@ -39,6 +39,46 @@
       "price": 40555,
       "status": "available",
       "createdAt": "2026-11-19T16:40:32.378Z"
+    },
+    {
+      "title": "Collier Cœur Doré",
+      "description": "Collier élégant avec pendentif en forme de cœur.",
+      "price": 250,
+      "status": "available",
+      "createdAt": "2026-11-20T14:16:55.869Z",
+      "id": 8
+    },
+    {
+      "title": "Bague Élégance",
+      "description": "Bague argentée avec une petite pierre brillante.",
+      "price": 180,
+      "status": "available",
+      "createdAt": "2026-11-20T14:17:30.440Z",
+      "id": 9
+    },
+    {
+      "title": "Bracelet Royal",
+      "description": "Bracelet doré avec une chaîne raffinée.",
+      "price": 320,
+      "status": "sold",
+      "createdAt": "2026-11-20T14:18:11.016Z",
+      "id": 10
+    },
+    {
+      "title": "Boucles Soleil",
+      "description": "Boucles d'oreilles dorées de forme circulaire.",
+      "price": 150,
+      "status": "available",
+      "createdAt": "2026-11-20T14:18:58.947Z",
+      "id": 11
+    },
+    {
+      "title": "Collier Perles",
+      "description": "Collier classique composé de perles blanches.",
+      "price": 500,
+      "status": "available",
+      "createdAt": "2026-11-20T14:19:55.698Z",
+      "id": 12
     }
   ]
 }
